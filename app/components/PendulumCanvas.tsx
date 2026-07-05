@@ -19,7 +19,7 @@ export default function PendulumCanvas() {
       const pivotY = 50;
       const length = 600;
 
-      let angle = Math.PI / 2;
+      let angle = Math.PI / 1.1;
       let angularSpeed = 0;
 
       function update() {
