@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Pendulum Simulator
 
-## Getting Started
+a simple pendulum simulator i made for a school project. it uses the real pendulum equation, not the approximation one from high school (sin theta = theta).
 
-First, run the development server:
+## what is this
 
-```bash
+this website lets you create multiple pendulums and change their length, gravity, and starting angle. it shows how they swing in real time. you can pause and reset them too.
+
+## physics
+
+most high school physics uses the small angle approximation:
+
+    θ'' = -(g/L) * θ
+
+this only works for small angles. i used the real one:
+
+    θ'' = -(g/L) * sin(θ)
+
+this means the pendulum works for any angle, even close to 180 degrees.
+
+## important
+
+this is a rigid rod pendulum, not a rope. the rod doesnt bend or go slack. it stays straight at all angles.
+
+## how to use
+
+- pendulums show up on the canvas
+- use the sidebar to add or remove pendulums
+- change length, gravity, angle with sliders or number inputs
+- pause button freezes everything
+- reset button sends all pendulums back to starting angle
+
+## what i used
+
+- next.js
+- react
+- typescript
+- canvas HTML 5 (for drawing)
+- tailwind css (for styling)
+
+## limitations
+
+- this only works on pc. mobile layout is broken, not supported.
+- no damping yet. pendulums swing forever (will be a new feature, not soon though).
+- no driving force, just gravity.
+
+## future stuff maybe
+
+- info bar that shows speed and acceleration
+- damping slider
+- export data as csv
+
+## how to run
+
+clone the repo and run these commands:
+
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+open localhost:3000 in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## note
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+this was made for a high school physics project. i am not a professional programmer. if something breaks, just refresh the page :).
