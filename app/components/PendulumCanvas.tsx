@@ -63,6 +63,12 @@ export default function PendulumCanvas() {
 
       if (isRunningRef.current) {
         pendulumStatesRef.current.forEach((p) => {
+          if (p.lengthPixels === 0) {
+            p.angularSpeed = 0;
+            p.angle = p.initialAngle;
+            return;
+          }
+
           const angularAcceleration =
             -(p.gravityPixels / p.lengthPixels) * Math.sin(p.angle);
           p.angularSpeed += angularAcceleration * dt;
@@ -92,7 +98,7 @@ export default function PendulumCanvas() {
         ctx.shadowBlur = 0;
 
         ctx.fillStyle = "#8899cc";
-        ctx.font = "10px monospace";
+        ctx.font = "20px monospace";
         ctx.textAlign = "center";
         ctx.fillText(
           `${(p.lengthPixels / METERS_TO_PIXELS).toFixed(2)}m`,
