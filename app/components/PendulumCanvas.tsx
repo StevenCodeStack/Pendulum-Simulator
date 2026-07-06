@@ -32,10 +32,10 @@ export default function PendulumCanvas() {
   function initializePendulums() {
     pendulumStatesRef.current = pendulums.map((p) => ({
       id: p.id,
-      lengthPixels: metersToPixels(p.l || 1.0),
-      gravityPixels: gravityToPixels(p.g || 9.81),
-      angle: degreesToRadians(p.angle || 30),
-      initialAngle: degreesToRadians(p.angle || 30),
+      lengthPixels: metersToPixels(p.l),
+      gravityPixels: gravityToPixels(p.g),
+      angle: degreesToRadians(p.angle),
+      initialAngle: degreesToRadians(p.angle),
       angularSpeed: 0,
     }));
   }
