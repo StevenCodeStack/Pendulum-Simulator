@@ -1,64 +1,93 @@
 "use client";
 import { useRef, useEffect } from "react";
+import { usePendulum } from "../context/PendulumProvider";
+import {
+  degreesToRadians,
+  gravityToPixels,
+  METERS_TO_PIXELS,
+  metersToPixels,
+} from "@/utils";
 
 export default function PendulumCanvas() {
+  const { pendulums } = usePendulum();
   const canvas = useRef<HTMLCanvasElement>(null);
+
   useEffect(() => {
-    if (canvas.current) {
-      const el = canvas.current;
-      const ctx = el.getContext("2d")!;
-      const rect = el.getBoundingClientRect();
-      const dpr = window.devicePixelRatio;
-      el.width = rect.width * dpr;
-      el.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
-      const dt = 1 / 120;
+    if (!canvas.current) return;
 
-      const g = 800;
-      const pivotX = el.width / 2;
-      const pivotY = 50;
-      const length = 600;
+    const el = canvas.current;
+    const ctx = el.getContext("2d")!;
+    const rect = el.getBoundingClientRect();
+    const dpr = window.devicePixelRatio;
 
-      let angle = Math.PI / 1.1;
-      let angularSpeed = 0;
+    el.width = rect.width * dpr;
+    el.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
 
-      function update() {
-        ctx.clearRect(0, 0, rect.width, rect.height);
+    const dt = 1 / 120;
+    const pivotX = rect.width / 2;
+    const pivotY = 80;
 
-        // Logic
-        const angularAcceleration = -(g / length) * Math.sin(angle);
-        angularSpeed = angularSpeed + angularAcceleration * dt;
-        angle = angle + angularSpeed * dt;
+    const pendulumStates = pendulums.map((p) => ({
+      id: p.id,
+      lengthPixels: metersToPixels(p.l || 1.0),
+      gravityPixels: gravityToPixels(p.g || 9.81),
+      angle: degreesToRadians(p.angle || 30),
+      angularSpeed: 0,
+    }));
 
-        const xDisplacement = length * Math.sin(angle);
-        const yDisplacement = length * Math.cos(angle);
-        const massX = el.width / 2 + xDisplacement;
-        const massY = pivotY + yDisplacement;
+    function update() {
+      ctx.clearRect(0, 0, rect.width, rect.height);
 
-        // Drawing
+      pendulumStates.forEach((p) => {
+        const alpha = -(p.gravityPixels / p.lengthPixels) * Math.sin(p.angle);
+        p.angularSpeed += alpha * dt;
+        p.angle += p.angularSpeed * dt;
+
+        const bobX = pivotX + p.lengthPixels * Math.sin(p.angle);
+        const bobY = pivotY + p.lengthPixels * Math.cos(p.angle);
+
         ctx.beginPath();
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = "#0f3460";
         ctx.moveTo(pivotX, pivotY);
-        ctx.lineTo(massX, massY);
+        ctx.lineTo(bobX, bobY);
+        ctx.strokeStyle = "#0f3460";
+        ctx.lineWidth = 3;
         ctx.stroke();
 
+        const bobRadius = Math.max(10, p.lengthPixels / 20);
         ctx.beginPath();
-        ctx.arc(pivotX, pivotY, 20, 0, Math.PI * 2);
-        ctx.fillStyle = "blue";
+        ctx.arc(bobX, bobY, bobRadius, 0, Math.PI * 2);
+        const hue = (Number(p.id) * 60) % 360;
+        ctx.fillStyle = `hsl(${hue}, 80%, 60%)`;
+        ctx.shadowColor = ctx.fillStyle;
+        ctx.shadowBlur = 15;
         ctx.fill();
+        ctx.shadowBlur = 0;
 
-        ctx.beginPath();
-        ctx.arc(massX, massY, 30, 0, Math.PI * 2);
-        ctx.fillStyle = "red";
-        ctx.fill();
+        ctx.fillStyle = "#8899cc";
+        ctx.font = "10px monospace";
+        ctx.textAlign = "center";
+        ctx.fillText(
+          `${(p.lengthPixels / METERS_TO_PIXELS).toFixed(2)}m`,
+          bobX,
+          bobY - bobRadius - 8,
+        );
+      });
 
-        requestAnimationFrame(update);
-      }
+      ctx.shadowBlur = 0;
+      ctx.beginPath();
+      ctx.arc(pivotX, pivotY, 14, 0, Math.PI * 2);
+      ctx.fillStyle = "#3b82f6";
+      ctx.shadowColor = "#3b82f6";
+      ctx.shadowBlur = 20;
+      ctx.fill();
+      ctx.shadowBlur = 0;
 
-      update();
+      requestAnimationFrame(update);
     }
-  }, []);
 
-  return <canvas ref={canvas} className="h-full w-full bg-slate-200"></canvas>;
+    update();
+  }, [pendulums]);
+
+  return <canvas ref={canvas} className="h-full w-full bg-black"></canvas>;
 }

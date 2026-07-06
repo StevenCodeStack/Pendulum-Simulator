@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import PendulumProvider from "./context/PendulumProvider";
 
 export const metadata: Metadata = {
   title: "Pendulum Calculator",
@@ -13,7 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <PendulumProvider>{children}</PendulumProvider>
+      </body>
     </html>
   );
 }
