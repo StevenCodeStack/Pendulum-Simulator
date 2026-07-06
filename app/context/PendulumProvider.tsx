@@ -20,7 +20,7 @@ const PendulumContext = createContext<PendulumContextType | null>(null);
 
 const PendulumProvider = ({ children }: { children: ReactNode }) => {
   const [pendulums, setPendulums] = useState<PendulumState[]>([]);
-  const [isRunning, setIsRunning] = useState(true);
+  const [isRunning, setIsRunning] = useState(false);
   const [resetTrigger, setResetTrigger] = useState(0);
   const triggerReset = () => {
     setResetTrigger((prev) => prev + 1);

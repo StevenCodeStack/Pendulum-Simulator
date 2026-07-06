@@ -10,7 +10,7 @@ import { usePendulum } from "../context/PendulumProvider";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
-  const { pendulums, setPendulums } = usePendulum();
+  const { pendulums, setPendulums, setIsRunning } = usePendulum();
   return (
     <>
       <button className={`absolute top-2 ${open ? "left-103" : "left-2"}`}>
@@ -33,7 +33,7 @@ const Sidebar = () => {
           <h1 className="text-2xl font-semibold">Pendulum Calculator</h1>
           <Plus
             className="w-8 h-8"
-            onClick={() =>
+            onClick={() => {
               setPendulums([
                 ...pendulums,
                 {
@@ -42,8 +42,9 @@ const Sidebar = () => {
                   g: 9.8,
                   l: 1,
                 },
-              ])
-            }
+              ]);
+              setIsRunning(true);
+            }}
           />
         </header>
 
