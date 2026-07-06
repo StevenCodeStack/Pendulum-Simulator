@@ -54,10 +54,16 @@ const DetailBar = () => {
         ) : (
           <div className="flex-1 overflow-y-auto space-y-3 pr-1">
             {displayData.map((d) => {
-              const pendulum = pendulums.find((p) => p.id === d.id);
+              const pendulum = pendulums.find((p) => p.id === d.id)!;
               const angleDeg = (d.angle * 180) / Math.PI;
               const hue = (Number(d.id) * 60) % 360;
               const color = `hsl(${hue}, 80%, 60%)`;
+
+              const KE = 0.5 * Math.pow(d.angularVelocity * pendulum.length, 2);
+              const PE =
+                pendulum.gravitationalAcceleration *
+                pendulum.length *
+                (1 - Math.cos(d.angle));
 
               return (
                 <div
@@ -97,6 +103,30 @@ const DetailBar = () => {
                       </p>
                       <p className="text-sm font-mono text-white">
                         {d.angularAcceleration.toFixed(2)} rad/s²
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wider">
+                        KE
+                      </p>
+                      <p className="text-sm font-mono text-white">
+                        {KE.toFixed(2)} J
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wider">
+                        PE
+                      </p>
+                      <p className="text-sm font-mono text-white">
+                        {PE.toFixed(2)} J
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wider">
+                        ME
+                      </p>
+                      <p className="text-sm font-mono text-white">
+                        {(KE + PE).toFixed(2)} J
                       </p>
                     </div>
                   </div>

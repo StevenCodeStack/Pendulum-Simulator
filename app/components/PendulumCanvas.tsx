@@ -72,11 +72,17 @@ export default function PendulumCanvas() {
             p.angularAcceleration = 0;
             return;
           }
-
-          p.angularAcceleration =
+          const accelerationAtA =
             -(p.gravityPixels / p.lengthPixels) * Math.sin(p.angle);
-          p.angularVelocity += p.angularAcceleration * dt;
-          p.angle += p.angularVelocity * dt;
+
+          p.angle += p.angularVelocity * dt + 0.5 * accelerationAtA * dt * dt;
+
+          const accelerationAtB =
+            -(p.gravityPixels / p.lengthPixels) * Math.sin(p.angle);
+
+          p.angularVelocity += 0.5 * (accelerationAtA + accelerationAtB) * dt;
+
+          p.angularAcceleration = accelerationAtB;
         });
 
         const liveData = pendulumStatesRef.current.map((p) => ({
