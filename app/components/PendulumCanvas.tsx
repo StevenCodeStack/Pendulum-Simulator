@@ -9,8 +9,36 @@ import {
 } from "@/utils";
 
 export default function PendulumCanvas() {
-  const { pendulums } = usePendulum();
+  const { pendulums, isRunning, resetTrigger } = usePendulum();
   const canvas = useRef<HTMLCanvasElement>(null);
+  const animationRef = useRef<number | null>(null);
+  const isRunningRef = useRef(isRunning);
+
+  useEffect(() => {
+    isRunningRef.current = isRunning;
+  }, [isRunning]);
+
+  const pendulumStatesRef = useRef<
+    {
+      id: string | number;
+      lengthPixels: number;
+      gravityPixels: number;
+      angle: number;
+      initialAngle: number;
+      angularSpeed: number;
+    }[]
+  >([]);
+
+  function initializePendulums() {
+    pendulumStatesRef.current = pendulums.map((p) => ({
+      id: p.id,
+      lengthPixels: metersToPixels(p.l || 1.0),
+      gravityPixels: gravityToPixels(p.g || 9.81),
+      angle: degreesToRadians(p.angle || 30),
+      initialAngle: degreesToRadians(p.angle || 30),
+      angularSpeed: 0,
+    }));
+  }
 
   useEffect(() => {
     if (!canvas.current) return;
@@ -28,22 +56,21 @@ export default function PendulumCanvas() {
     const pivotX = rect.width / 2;
     const pivotY = 80;
 
-    const pendulumStates = pendulums.map((p) => ({
-      id: p.id,
-      lengthPixels: metersToPixels(p.l || 1.0),
-      gravityPixels: gravityToPixels(p.g || 9.81),
-      angle: degreesToRadians(p.angle || 30),
-      angularSpeed: 0,
-    }));
+    initializePendulums();
 
     function update() {
       ctx.clearRect(0, 0, rect.width, rect.height);
 
-      pendulumStates.forEach((p) => {
-        const alpha = -(p.gravityPixels / p.lengthPixels) * Math.sin(p.angle);
-        p.angularSpeed += alpha * dt;
-        p.angle += p.angularSpeed * dt;
+      if (isRunningRef.current) {
+        pendulumStatesRef.current.forEach((p) => {
+          const angularAcceleration =
+            -(p.gravityPixels / p.lengthPixels) * Math.sin(p.angle);
+          p.angularSpeed += angularAcceleration * dt;
+          p.angle += p.angularSpeed * dt;
+        });
+      }
 
+      pendulumStatesRef.current.forEach((p) => {
         const bobX = pivotX + p.lengthPixels * Math.sin(p.angle);
         const bobY = pivotY + p.lengthPixels * Math.cos(p.angle);
 
@@ -83,11 +110,21 @@ export default function PendulumCanvas() {
       ctx.fill();
       ctx.shadowBlur = 0;
 
-      requestAnimationFrame(update);
+      animationRef.current = requestAnimationFrame(update);
     }
 
     update();
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
   }, [pendulums]);
+
+  useEffect(() => {
+    initializePendulums();
+  }, [resetTrigger]);
 
   return <canvas ref={canvas} className="h-full w-full bg-black"></canvas>;
 }

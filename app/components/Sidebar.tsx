@@ -16,18 +16,18 @@ const Sidebar = () => {
       <button className={`absolute top-2 ${open ? "left-103" : "left-2"}`}>
         {open ? (
           <ArrowLeftFromLine
-            className="bg-white rounded p-1 w-8 h-8"
+            className="bg-gray-900 text-white rounded p-1.5 w-8 h-8"
             onClick={() => setOpen(false)}
           />
         ) : (
           <ArrowRightFromLine
-            className="bg-white rounded p-1 w-8 h-8"
+            className="bg-gray-900 text-white rounded p-1.5 w-8 h-8"
             onClick={() => setOpen(true)}
           />
         )}
       </button>
       <div
-        className={`w-100 px-5 py-2 absolute top-0 transition-all h-full bg-gray-950 border-r border-gray-800 text-white flex flex-col ${open ? "left-0" : "-left-full"} `}
+        className={`z-100 w-100 px-5 py-2 absolute top-0 transition-all h-full bg-gray-950 border-r border-gray-800 text-white flex flex-col ${open ? "left-0" : "-left-full"} `}
       >
         <header className="flex justify-between items-center">
           <h1 className="text-2xl font-semibold">Pendulum Calculator</h1>
@@ -36,7 +36,12 @@ const Sidebar = () => {
             onClick={() =>
               setPendulums([
                 ...pendulums,
-                { id: Date.now().toString(), angle: 30, g: 9.8, l: 1 },
+                {
+                  id: (Date.now() + Math.random() * 1000).toString(),
+                  angle: 30,
+                  g: 9.8,
+                  l: 1,
+                },
               ])
             }
           />
@@ -62,7 +67,9 @@ const Sidebar = () => {
                     type="number"
                     defaultValue={e.l}
                     onKeyDown={(event) => {
-                      if (event.key === "Enter") {
+                      if (parseFloat(event.currentTarget.value) < 0)
+                        event.currentTarget.value = "0";
+                      else if (event.key === "Enter") {
                         const newValue = parseFloat(event.currentTarget.value);
                         if (!isNaN(newValue)) {
                           setPendulums((prev) =>
@@ -130,7 +137,9 @@ const Sidebar = () => {
                     type="number"
                     defaultValue={e.g}
                     onKeyDown={(event) => {
-                      if (event.key === "Enter") {
+                      if (parseFloat(event.currentTarget.value) < 0)
+                        event.currentTarget.value = "0";
+                      else if (event.key === "Enter") {
                         const newValue = parseFloat(event.currentTarget.value);
                         if (!isNaN(newValue)) {
                           setPendulums((prev) =>
@@ -159,7 +168,11 @@ const Sidebar = () => {
                 </div>
               </div>
 
-              <Minus />
+              <Minus
+                onClick={() =>
+                  setPendulums(pendulums.filter((item) => item.id !== e.id))
+                }
+              />
             </div>
           ))}
         </div>
