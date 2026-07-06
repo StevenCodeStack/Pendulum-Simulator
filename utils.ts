@@ -8,7 +8,7 @@ export function gravityToPixels(g: number): number {
 }
 
 export function degreesToRadians(degrees: number): number {
-  return degrees * (Math.PI / 180);
+  return (degrees % 360) * (Math.PI / 180);
 }
 export const formatTime = (seconds: number) => {
   const mins = Math.floor(seconds / 60);

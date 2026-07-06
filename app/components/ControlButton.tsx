@@ -14,15 +14,12 @@ const ControlButton = () => {
   const elapsedTimeRef = useRef<number>(0);
   const isRunningRef = useRef(isRunning);
 
-  // Keep ref in sync with state
   useEffect(() => {
     isRunningRef.current = isRunning;
   }, [isRunning]);
 
-  // Start/stop timer based on isRunning
   useEffect(() => {
     if (isRunning) {
-      // Reset start time based on accumulated elapsed time
       startTimeRef.current = Date.now() - elapsedTimeRef.current * 1000;
 
       if (intervalRef.current) {
@@ -34,7 +31,7 @@ const ControlButton = () => {
         const now = Date.now();
         const elapsed = (now - startTimeRef.current) / 1000;
         setTime(elapsed);
-      }, 50); // Update every 50ms for smooth clock
+      }, 50);
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -54,7 +51,6 @@ const ControlButton = () => {
     };
   }, [isRunning]);
 
-  // Reset timer when resetTrigger changes
   useEffect(() => {
     elapsedTimeRef.current = 0;
     setTimeout(() => setTime(0), 0);

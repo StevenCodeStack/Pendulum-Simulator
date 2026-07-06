@@ -1,12 +1,29 @@
 "use client";
-import React, { createContext, ReactNode, useContext, useState } from "react";
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useState,
+  useRef,
+} from "react";
 
-type PendulumState = {
+export type PendulumState = {
   id: string;
-  l: number;
-  g: number;
+  length: number;
+  gravitationalAcceleration: number;
   angle: number;
+  initialAngle: number;
+  angularAcceleration: number;
+  angularVelocity: number;
 };
+
+export type LivePhysicsData = {
+  id: string;
+  angle: number;
+  angularVelocity: number;
+  angularAcceleration: number;
+};
+
 type PendulumContextType = {
   pendulums: PendulumState[];
   setPendulums: React.Dispatch<React.SetStateAction<PendulumState[]>>;
@@ -14,6 +31,9 @@ type PendulumContextType = {
   setIsRunning: React.Dispatch<React.SetStateAction<boolean>>;
   resetTrigger: number;
   triggerReset: () => void;
+
+  livePhysicsRef: React.MutableRefObject<LivePhysicsData[]>;
+  updateLivePhysics: (data: LivePhysicsData[]) => void;
 };
 
 const PendulumContext = createContext<PendulumContextType | null>(null);
@@ -22,6 +42,13 @@ const PendulumProvider = ({ children }: { children: ReactNode }) => {
   const [pendulums, setPendulums] = useState<PendulumState[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [resetTrigger, setResetTrigger] = useState(0);
+
+  const livePhysicsRef = useRef<LivePhysicsData[]>([]);
+
+  const updateLivePhysics = (data: LivePhysicsData[]) => {
+    livePhysicsRef.current = data;
+  };
+
   const triggerReset = () => {
     setResetTrigger((prev) => prev + 1);
   };
@@ -35,12 +62,15 @@ const PendulumProvider = ({ children }: { children: ReactNode }) => {
         setIsRunning,
         resetTrigger,
         triggerReset,
+        livePhysicsRef,
+        updateLivePhysics,
       }}
     >
       {children}
     </PendulumContext.Provider>
   );
 };
+
 export function usePendulum() {
   const context = useContext(PendulumContext);
   if (!context) {

@@ -9,7 +9,8 @@ import {
 } from "@/utils";
 
 export default function PendulumCanvas() {
-  const { pendulums, isRunning, resetTrigger } = usePendulum();
+  const { pendulums, isRunning, resetTrigger, updateLivePhysics } =
+    usePendulum();
   const canvas = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | null>(null);
   const isRunningRef = useRef(isRunning);
@@ -25,18 +26,20 @@ export default function PendulumCanvas() {
       gravityPixels: number;
       angle: number;
       initialAngle: number;
-      angularSpeed: number;
+      angularVelocity: number;
+      angularAcceleration: number;
     }[]
   >([]);
 
   function initializePendulums() {
     pendulumStatesRef.current = pendulums.map((p) => ({
       id: p.id,
-      lengthPixels: metersToPixels(p.l),
-      gravityPixels: gravityToPixels(p.g),
+      lengthPixels: metersToPixels(p.length),
+      gravityPixels: gravityToPixels(p.gravitationalAcceleration),
       angle: degreesToRadians(p.angle),
       initialAngle: degreesToRadians(p.angle),
-      angularSpeed: 0,
+      angularVelocity: 0,
+      angularAcceleration: 0,
     }));
   }
 
@@ -63,17 +66,26 @@ export default function PendulumCanvas() {
 
       if (isRunningRef.current) {
         pendulumStatesRef.current.forEach((p) => {
-          if (p.lengthPixels === 0) {
-            p.angularSpeed = 0;
+          if (p.lengthPixels < 0.1) {
+            p.angularVelocity = 0;
             p.angle = p.initialAngle;
+            p.angularAcceleration = 0;
             return;
           }
 
-          const angularAcceleration =
+          p.angularAcceleration =
             -(p.gravityPixels / p.lengthPixels) * Math.sin(p.angle);
-          p.angularSpeed += angularAcceleration * dt;
-          p.angle += p.angularSpeed * dt;
+          p.angularVelocity += p.angularAcceleration * dt;
+          p.angle += p.angularVelocity * dt;
         });
+
+        const liveData = pendulumStatesRef.current.map((p) => ({
+          id: String(p.id),
+          angle: p.angle,
+          angularVelocity: p.angularVelocity,
+          angularAcceleration: p.angularAcceleration,
+        }));
+        updateLivePhysics(liveData);
       }
 
       pendulumStatesRef.current.forEach((p) => {

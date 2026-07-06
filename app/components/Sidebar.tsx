@@ -38,9 +38,12 @@ const Sidebar = () => {
                 ...pendulums,
                 {
                   id: (Date.now() + Math.random() * 1000).toString(),
+                  gravitationalAcceleration: 9.8,
+                  length: 1,
                   angle: 30,
-                  g: 9.8,
-                  l: 1,
+                  initialAngle: 30,
+                  angularAcceleration: 0,
+                  angularVelocity: 0,
                 },
               ]);
               setIsRunning(true);
@@ -51,14 +54,9 @@ const Sidebar = () => {
         {/* Container */}
         <div className="mt-6 h-full w-full overflow-y-auto flex flex-col gap-2">
           {/* Item */}
-          {pendulums.map((e, i) => (
+          {pendulums.map((e) => (
             <div
-              key={
-                e.angle.toString() +
-                e.g.toString() +
-                e.l.toString() +
-                i.toString()
-              }
+              key={e.id}
               className="w-full h-12 border border-slate-900 flex items-center justify-between px-3"
             >
               <div className="flex justify-between items-center gap-3">
@@ -66,7 +64,7 @@ const Sidebar = () => {
                   <p>l :</p>
                   <input
                     type="number"
-                    defaultValue={e.l}
+                    defaultValue={e.length}
                     onKeyDown={(event) => {
                       if (parseFloat(event.currentTarget.value) < 0)
                         event.currentTarget.value = "0";
@@ -89,7 +87,9 @@ const Sidebar = () => {
                       if (!isNaN(newValue)) {
                         setPendulums((prev) =>
                           prev.map((item) =>
-                            item.id === e.id ? { ...item, l: newValue } : item,
+                            item.id === e.id
+                              ? { ...item, length: newValue }
+                              : item,
                           ),
                         );
                       }
@@ -136,7 +136,7 @@ const Sidebar = () => {
                   <p>g :</p>
                   <input
                     type="number"
-                    defaultValue={e.g}
+                    defaultValue={e.gravitationalAcceleration}
                     onKeyDown={(event) => {
                       if (parseFloat(event.currentTarget.value) < 0)
                         event.currentTarget.value = "0";
@@ -146,7 +146,10 @@ const Sidebar = () => {
                           setPendulums((prev) =>
                             prev.map((item) =>
                               item.id === e.id
-                                ? { ...item, g: newValue }
+                                ? {
+                                    ...item,
+                                    gravitationalAcceleration: newValue,
+                                  }
                                 : item,
                             ),
                           );
