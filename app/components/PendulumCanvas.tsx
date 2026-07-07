@@ -55,7 +55,7 @@ export default function PendulumCanvas() {
     el.height = rect.height * dpr;
     ctx.scale(dpr, dpr);
 
-    const dt = 1 / 120;
+    const dt = 1 / 144;
     const pivotX = rect.width / 2;
     const pivotY = 80;
 
