@@ -12,9 +12,6 @@ export type PendulumState = {
   length: number;
   gravitationalAcceleration: number;
   angle: number;
-  initialAngle: number;
-  angularAcceleration: number;
-  angularVelocity: number;
 };
 
 export type LivePhysicsData = {

@@ -2,11 +2,18 @@
 import { Pause, Play, RefreshCcw } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import { usePendulum } from "../context/PendulumProvider";
-import { formatTime } from "@/utils";
+import { degreesToRadians, formatTime } from "@/utils";
 import { orbitron } from "../fonts";
 
 const ControlButton = () => {
-  const { isRunning, setIsRunning, resetTrigger, triggerReset } = usePendulum();
+  const {
+    pendulums,
+    isRunning,
+    setIsRunning,
+    resetTrigger,
+    triggerReset,
+    updateLivePhysics,
+  } = usePendulum();
 
   const [time, setTime] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -52,6 +59,16 @@ const ControlButton = () => {
   }, [isRunning]);
 
   useEffect(() => {
+    updateLivePhysics(
+      pendulums.map((e) => {
+        return {
+          id: e.id,
+          angle: degreesToRadians(e.angle),
+          angularAcceleration: 0,
+          angularVelocity: 0,
+        };
+      }),
+    );
     elapsedTimeRef.current = 0;
     setTimeout(() => setTime(0), 0);
     if (isRunningRef.current) {
