@@ -41,9 +41,6 @@ const Sidebar = () => {
                   gravitationalAcceleration: 9.8,
                   length: 1,
                   angle: 30,
-                  initialAngle: 30,
-                  angularAcceleration: 0,
-                  angularVelocity: 0,
                 },
               ]);
               setIsRunning(true);
